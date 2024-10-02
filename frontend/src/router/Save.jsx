@@ -20,7 +20,12 @@ const Save = () => {
     console.log(board);
     let res = await axios.post("http://localhost:3003/board/save", {board : board});
     console.log(res);
-    setBoard({});
+    setBoard({
+      boardTitle : "",
+      boardWriter : "",
+      boardPwd : "",
+      boardContents : ""
+    });
   }
   return (
     <>

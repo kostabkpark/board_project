@@ -79,9 +79,20 @@ app.get('/qs', function (req, res) {
   res.send(`query string id=${id}, pwd=${pwd}`);
 })
 
+app.get('/board/list', (req, res) => {
+  let sql = "select id, boardTitle, boardWriter, boardHits, createdAt from board_table";
+  connection.query(sql, (err, results) => {
+    if(err) throw err;
+    console.log(results);
+    res.status(200).json(results);
+  })
+    //res.status(200);
+    //res.send("게시판 글 목록 조회하기 화면입니다." );
+})
+
 app.post("/board/save", (req, res) => {
   console.log("게시판 저장 요청이 들어왔습니다.");
-  console.log(req.body);
+  console.log(req.body.board);
   let {boardTitle, boardWriter, boardPwd, boardContents } = req.body.board;
   // mysql 로 board_table 테이블에 저장한다.
   let sql = `insert into board_table(boardTitle, boardWriter, boardPwd, boardContents) values (?,?,?,?)`;
@@ -92,37 +103,39 @@ app.post("/board/save", (req, res) => {
     // console.log(results.insertId);
     if(results.affectedRows == 1) {
       console.log(results.insertId + " 번째 게시판 글이 등록되었습니다.");
+      res.send("등록완료");
+      //Response.redirect('/board/list');
     }
   });
   
 });
 
-app.put('/posts/:id', (req, res) => {
-  console.log(req.body);
-  let {id} = req.params;
-  let {title, views} = req.body;
-  // 비즈니스 로직 적용 - views 만 업데이트 대상
-  let sql = 'update posts set views = ? where id = ? ';
-  connection.query(sql, [views, id], (err, results) => {
-    if (err) throw err;
-    console.log(results.affectedRows);
-    if(results.affectedRows == 1) {
-      console.log("수정이 완료되었습니다.");
-    }
-  });
-});
+// app.put('/posts/:id', (req, res) => {
+//   console.log(req.body);
+//   let {id} = req.params;
+//   let {title, views} = req.body;
+//   // 비즈니스 로직 적용 - views 만 업데이트 대상
+//   let sql = 'update posts set views = ? where id = ? ';
+//   connection.query(sql, [views, id], (err, results) => {
+//     if (err) throw err;
+//     console.log(results.affectedRows);
+//     if(results.affectedRows == 1) {
+//       console.log("수정이 완료되었습니다.");
+//     }
+//   });
+// });
 
-app.delete('/posts/:id', (req, res)=>{
-  let {id} = req.params;
-  let sql = "delete from posts where id = ?";
-  connection.query(sql, [id], (err, results) => {
-    if (err) throw err;
-    console.log(results.affectedRows);
-    if(results.affectedRows == 1)  {
-      console.log("삭제 처리 되었습니다.");
-    }
-  });
-});
+// app.delete('/posts/:id', (req, res)=>{
+//   let {id} = req.params;
+//   let sql = "delete from posts where id = ?";
+//   connection.query(sql, [id], (err, results) => {
+//     if (err) throw err;
+//     console.log(results.affectedRows);
+//     if(results.affectedRows == 1)  {
+//       console.log("삭제 처리 되었습니다.");
+//     }
+//   });
+// });
 
 
 app.listen(3003, () =>
